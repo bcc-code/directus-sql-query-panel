@@ -18,7 +18,7 @@ View the result of your SQL query in a tabular panel with Directus Insights.
 
 ### Via npm
 
-`npm install @bcc-code/directus-extension-sql-query-panel`
+`npm install directus-extension-sql-query-panel`
 
 ## Usage
 
