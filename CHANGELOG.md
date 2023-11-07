@@ -1,3 +1,10 @@
+# Version 1.0.4
+
+- Add cache option to adjust how long the results are cached for 
+	-	⚠️ Defaults to 300 seconds, ie. 5min (previous default was 30 seconds)
+	- Does update when variables change
+- Improved feedback on missing variables (uses info instead of error)
+
 # Version 1.0.3
 
 - Support sqlite and mssql

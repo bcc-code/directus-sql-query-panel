@@ -40,6 +40,7 @@ const { id, showHeader, download, is_static } = toRefs(props);
 
 const loading = ref(false);
 const error = ref('');
+const info = ref('');
 const headers = ref(null);
 const items = ref(null);
 
@@ -47,11 +48,33 @@ const api = useApi();
 const { useInsightsStore } = useStores();
 const insights = useInsightsStore();
 
+const requiredVariables = ref(new Set());
+
+const variablesInQuery = computed(() => {
+  const variables = {};
+  const missing = [];
+  requiredVariables.value.forEach(v => {
+    if (typeof insights.variables[v] === 'undefined' || insights.variables[v] === null) {
+      missing.push(v);
+    } else {
+      variables[v] = insights.variables[v];
+    }
+  });
+
+  return missing.length ? missing : variables;
+});
+
 if (is_static.value) {
   nextTick(fetchData);
 } else {
 	const refetch = debounce(fetchData, 1000);
-  watch(() => insights.variables, () => {
+  watch(variablesInQuery, () => {
+    if (Array.isArray(variablesInQuery.value)) {
+      info.value = `Please specify: ${variablesInQuery.value.join(' & ')}`;
+      return;
+    }
+    info.value = '';
+
 		if (!items.value) {
 			loading.value = true;
 		}
@@ -89,6 +112,7 @@ watch(
 
 let whoIsFetching;
 async function fetchData() {
+  if (Array.isArray(variablesInQuery.value)) return;
   loading.value = true;
   error.value = '';
   headers.value = null;
@@ -97,8 +121,9 @@ async function fetchData() {
   try {
 		const me = {};
 		whoIsFetching = me
+
     const { data } = await api.get(`insights/query/${id.value}`, {
-      params: insights.variables ?? {},
+      params: variablesInQuery.value,
     });
 		if (whoIsFetching !== me) return;
 
@@ -131,7 +156,13 @@ async function fetchData() {
       }
     }
   } catch (e) {
-    error.value = e.response?.data?.error || e.message;
+    const err = e.response?.data?.error || e.message;
+    if (err.includes('Missing query param')) {
+      info.value = err.replace('Missing query param', 'Please specify');
+      err.split(': ')[1].split(', ').forEach(v => requiredVariables.value.add(v));
+    } else {
+      error.value = err;
+    }
   }
   loading.value = false;
 }
@@ -209,8 +240,9 @@ function onRowClick({ item }) {
 
 <template>
   <div class="sql-panel-container" :class="{ 'has-header': showHeader }">
-    <div v-if="loading || error" class="center">
+    <div v-if="loading || error || info" class="center">
       <v-progress-circular v-if="loading" indeterminate />
+      <v-notice v-else-if="info" type="info" center>{{ info }}</v-notice>
       <v-notice v-else type="danger" center>{{ error }}</v-notice>
     </div>
 

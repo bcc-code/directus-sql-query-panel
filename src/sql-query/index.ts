@@ -13,7 +13,7 @@ export default definePanel({
       name: 'SQL query',
       type: 'string',
       meta: {
-        note: "Supports variables in the format of {{variable_name}}. Don't quote string variables",
+        note: "Supports variables in the format of {{variable_name}}. Don't quote string variables. Example: SELECT * FROM tasks WHERE list = {{list}} AND status IN ({{status}})",
         interface: 'input-code',
         width: 'full',
         options: {
@@ -129,37 +129,6 @@ export default definePanel({
       },
     },
     {
-      field: 'download',
-      name: 'Download button',
-      type: 'boolean',
-      meta: {
-        width: 'half',
-        interface: 'boolean',
-        options: {
-          label: 'Show',
-        },
-      },
-      schema: {
-        default_value: true,
-      },
-    },
-    {
-      field: 'is_static',
-      name: 'Is static',
-      type: 'boolean',
-      meta: {
-        width: 'half',
-        interface: 'boolean',
-        options: {
-          label: 'Yes',
-        },
-        note: 'If the result will not be affect when variables are changed, you can check this box to improve performance.',
-      },
-      schema: {
-        default_value: false,
-      },
-    },
-    {
       field: 'actions',
       name: 'Actions',
       type: 'json',
@@ -232,6 +201,54 @@ export default definePanel({
         },
       },
     },
+    {
+      field: 'download',
+      name: 'Download button',
+      type: 'boolean',
+      meta: {
+        width: 'half',
+        interface: 'boolean',
+        options: {
+          label: 'Show',
+        },
+      },
+      schema: {
+        default_value: true,
+      },
+    },
+    {
+      field: 'is_static',
+      name: 'Is static',
+      type: 'boolean',
+      meta: {
+        width: 'half',
+        interface: 'boolean',
+        options: {
+          label: 'Yes',
+        },
+        note: 'If the result will not be affect when variables are changed, you can check this box to improve performance.',
+      },
+      schema: {
+        default_value: false,
+      },
+    },
+    {
+      field: 'cache',
+      name: 'Cache Response',
+      type: 'integer',
+      meta: {
+        width: 'half',
+        interface: 'input',
+        options: {
+          min: 10,
+          max: 3600,
+        },
+        note: 'Tells the browser how long to cache results for. Default is 30 seconds.',
+      },
+      schema: {
+        default_value: 300,
+      },
+    }
   ],
   minWidth: 10,
   minHeight: 10,
