@@ -37,7 +37,7 @@ const fiteredItems = computed(() => {
 });
 
 const summary = computed(() => {
-  const result = createSummary(props.items, props.headers);
+  const result = createSummary(fiteredItems.value, props.headers);
   return result;
 });
 
