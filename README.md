@@ -30,6 +30,33 @@ By default a table will be generated with the selected columns from your query, 
 
 If you do not use variables, you can mark the panel as static.
 
+## Events
+
+There are two events that are fired when a query is executed:
+
+	- `sql-query:request` - Fired before variables are replaced in the query (payload: `{ variables: Record<string, any>, query: string }`, request)
+	- `sql-query:response` - Fired after the query has been executed (payload: `{items: Record<string, any>[], headers: string[]}`, request)
+
+Use it to add your own logic to the query, for example:
+
+```js
+// Check or modify the variables and query before it gets executed
+emitter.onFilter('sql-query:request', async ({ variables, query }, req) => {
+	// Ensure the current user has access to the tenant
+	if (query.includes('{{tenant}}') && variables.tenant) {
+		const tenantSrv = new ItemsService('tenants', req);
+		try {
+			await tenantSrv.readOne(variables.tenant, { fields: ['id'] });
+		} catch (e) { throw new Error('Invalid tenant'); }
+	}
+
+	// Add tenant if not already present eg.
+	// variables.tenant = req.user.tenantId;
+
+	return { variables, query };
+})
+```
+
 
 ## Contributing
 

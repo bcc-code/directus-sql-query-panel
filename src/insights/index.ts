@@ -1,8 +1,9 @@
 import type { EndpointConfig } from '@directus/extensions';
 import { parseMysqlResults } from './resultsMysql';
 import { parsePostgresResult } from './resultsPostgres';
+import { OnFilterEvents, RequestPayload, ResponsePayload } from './types';
 
-const registerEndpoint: EndpointConfig = ((router, { database, services }) => {
+const registerEndpoint: EndpointConfig = ((router, { database, services, emitter }) => {
   const { PanelsService } = services;
 
   async function getPanelQuery(req: any) {
@@ -21,12 +22,12 @@ const registerEndpoint: EndpointConfig = ((router, { database, services }) => {
       };
     };
 
-    const vars = req.query ?? {};
-    vars.dashboard = panel.dashboard;
+    let { variables, query }: RequestPayload = await emitter.emitFilter(OnFilterEvents.REQUEST, {
+      variables: Object.assign({dashboard: panel.dashboard }, req.query ?? {}),
+      query: panel.options.sql,
+    }, req);
 
-    let query: string = panel.options.sql;
-
-    for (const q in vars) {
+    for (const q in variables) {
       // Throw if q isn't a clean variable name
       if (!q.match(/^[a-zA-Z0-9_]+$/)) {
         throw new Error(`Invalid variable name: ${q}`);
@@ -37,7 +38,7 @@ const registerEndpoint: EndpointConfig = ((router, { database, services }) => {
 
     return {
       query,
-      vars,
+      variables,
       panel,
     };
   }
@@ -68,8 +69,10 @@ const registerEndpoint: EndpointConfig = ((router, { database, services }) => {
 
   async function executeQueryHandler(req, res) {
 		try {
-    	const { query, vars } = await getPanelQuery(req)
-      const result = await executeQuery(query, vars)
+    	const { query, variables } = await getPanelQuery(req)
+      let result: ResponsePayload = await executeQuery(query, variables)
+
+      result = await emitter.emitFilter(OnFilterEvents.RESPONSE, result, req);      
 
       // Default cache of 30 seconds
       res.set('Cache-control', 'public, max-age=30')
