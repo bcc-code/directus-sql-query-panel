@@ -1,6 +1,5 @@
 import type { EndpointConfig } from '@directus/extensions';
-import { parseMysqlResults } from './resultsMysql';
-import { parsePostgresResult } from './resultsPostgres';
+import { parseResults } from './parseQueryResults';
 import { OnFilterEvents, RequestPayload, ResponsePayload } from './types';
 
 const registerEndpoint: EndpointConfig = ((router, { database, services, emitter }) => {
@@ -57,14 +56,7 @@ const registerEndpoint: EndpointConfig = ((router, { database, services, emitter
     }
 
     const result = await database.raw(sql, vars);
-    switch (database.client.config.client) {
-      case 'mysql':
-        return parseMysqlResults(result);
-      case 'pg':
-        return parsePostgresResult(result);
-      default:
-        throw new Error(`Unsupported database client: ${database.client.config.client}`);
-    }
+    return parseResults(result);
   }
 
   async function executeQueryHandler(req, res) {

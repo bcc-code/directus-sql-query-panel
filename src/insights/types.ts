@@ -1,4 +1,4 @@
-export type parseSqlResults = (result: any) => {
+export type ParseSqlResults = (result: any) => {
 	items: Array<Record<string, any>>
 	headers: Array<string>
 }

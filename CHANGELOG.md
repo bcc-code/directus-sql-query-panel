@@ -1,3 +1,8 @@
+# Version 1.0.3
+
+- Support sqlite and mssql
+	- Partial support for 'CALL' statements
+
 # Version 1.0.2
 
 - Add event emitter to allow other extensions to listen to events
