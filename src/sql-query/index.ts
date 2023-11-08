@@ -71,12 +71,13 @@ export default definePanel({
                 width: 'half',
                 interface: 'input',
                 options: {
-                  min: 40,
-                  max: 400,
+                  min: 1,
+                  max: 300,
                 },
+                note: 'Width of the column in ch (character width). Default is 10.',
               },
               schema: {
-                default_value: 100,
+                default_value: 10,
               },
             },
             {
