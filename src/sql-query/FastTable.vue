@@ -53,7 +53,7 @@ function sortIt(header) {
 </script>
 
 <template>
-  <div class="fast-table">
+  <div class="sql-query-table">
     <table>
       <thead class="table-header" :class="{ fixed: fixedHeader }">
         <tr class="search" v-if="searchable.length && items.length > 10">
@@ -89,7 +89,7 @@ function sortIt(header) {
       <tbody v-if="!(loading || items.length)">
         <tr>
           <td colspan="100%">
-            <v-card style="padding: 2rem; --v-card-max-width: 100%">
+            <v-card style="padding: 2rem; --v-card-max-width: 100%; margin: 2rem auto;">
               <v-card-title>
                 <v-icon name="info" style="margin-right: 2rem" />
                 {{ t('no_items') }}
@@ -109,9 +109,11 @@ function sortIt(header) {
             </td>
           </tr>
         </slot>
+        <!-- This is to fill up any remaining height in the table -->
+        <tr><td style="height: 100%;"></td></tr>
       </tbody>
-      <tfoot>
-        <tr v-if="summary">
+      <tfoot v-if="summary">
+        <tr>
           <td v-for="col in headers" :key="col.value" v-tooltip="col.summarise">
             <code class="v-text-overflow" v-if="summary[col.value]">
               {{ summary[col.value] }}
@@ -129,10 +131,16 @@ function sortIt(header) {
   --v-table-background-color: var(--v-input-background-color);
 }
 
-.fast-table {
+.sql-query-table {
   position: relative;
   height: var(--v-table-height);
   overflow-y: auto;
+
+  --sqt-head--background: var(--background-normal, var(--theme--background));
+  --sqt-head--color: color: var(--foreground-normal, var(--theme--foreground));
+
+  --sqt-foot--background: var(--background-normal, var(--theme--background));
+  --sqt-foot--color: color: var(--foreground-normal, var(--theme--foreground));
 }
 
 table {
@@ -145,8 +153,8 @@ table {
 }
 
 table thead {
-  background-color: var(--background-normal);
-  color: var(--foreground-normal);
+  background-color: var(--sqt-head--background);
+  color: var(--sqt-head--color);
   border-bottom: var(--border-width) solid var(--v-input-border-color);
 }
 
@@ -157,12 +165,12 @@ table thead.fixed {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-table tr.headers th {
+table thead tr.headers th {
   padding: 8px;
   font-weight: bold;
   min-width: 3rem;
-  background-color: var(--background-normal);
-  color: var(--foreground-normal);
+  background-color: var(--sqt-head--background);
+  color: var(--sqt-head--color);
   border-bottom: var(--border-width) solid var(--v-input-border-color);
 }
 
@@ -204,7 +212,8 @@ table tbody {
 table tfoot tr {
   position: sticky;
   bottom: 0;
-  background-color: var(--background-normal);
+  background-color: var(--sqt-foot--background);
+  color: var(--sqt-foot--color);
   box-shadow: var(--card-shadow);
 }
 
@@ -212,7 +221,7 @@ table tfoot tr td {
   padding: 8px;
   height: 44px;
   font-weight: bold;
-  background-color: var(--background-normal);
-  color: var(--foreground-normal);
+  background-color: var(--sqt-foot--background);
+  color: var(--sqt-foot--color);
 }
 </style>

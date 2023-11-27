@@ -1,6 +1,6 @@
 {
 	"name": "directus-extension-sql-query-panel",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"type": "module",
 	"description": "Insights Panel for viewing results for dynamic sql queries",
 	"icon": "extension",
@@ -39,6 +39,7 @@
 		"directus-custom-bundle"
 	],
 	"scripts": {
+		"start": "vite --port 8080 --host",
 		"build": "directus-extension build",
 		"dev": "directus-extension build -w --no-minify",
 		"link": "directus-extension link",

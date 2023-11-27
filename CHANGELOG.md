@@ -1,4 +1,8 @@
-# Version 1.0.5
+# Version 1.0.6
+
+- Fix row height when items are less than full height of table
+
+## Version 1.0.5
 
 - Change default column width from 100ch to 10ch
 
