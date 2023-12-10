@@ -60,7 +60,9 @@ const registerEndpoint: EndpointConfig = ((router, { database, services, emitter
     return parseResults(result);
   }
 
-  async function executeQueryHandler(req, res) {
+  
+
+  router.get('/query/:panelId', async (req, res) => {
 		try {
     	const { query, variables, panel } = await getPanelQuery(req)
       let result: ResponsePayload = await executeQuery(query, variables)
@@ -70,14 +72,12 @@ const registerEndpoint: EndpointConfig = ((router, { database, services, emitter
       // Default cache of 300 seconds
       let cache = Number(panel.options.cache ?? 300)
       cache = cache > 0 ? cache : 300
-      res.set(`Cache-control', 'public, max-age=${cache}`)
+      res.set('Cache-control', `public, max-age=${cache}`)
 			return res.json(result);
 		} catch (err) {
       return res.status(400).json({ error: (err as Error).message })
 		}
-  }
-
-  router.get('/query/:panelId', executeQueryHandler);
+  });
 });
 
 export default registerEndpoint;

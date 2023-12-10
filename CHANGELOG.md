@@ -1,4 +1,8 @@
-# Version 1.0.6
+# Version 1.0.7
+
+- Fix issue with cache-control header being set as array instead of string
+
+## Version 1.0.6
 
 - Fix row height when items are less than full height of table
 
