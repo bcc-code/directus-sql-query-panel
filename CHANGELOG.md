@@ -1,4 +1,4 @@
-# Version 1.0.8
+# Version 1.0.9
 
 - Added and hover style for on row click
 - Add ability to set variables on clicking actions as an alternative to linking to page

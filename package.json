@@ -1,6 +1,6 @@
 {
 	"name": "directus-extension-sql-query-panel",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"type": "module",
 	"description": "Insights Panel for viewing results for dynamic sql queries",
 	"icon": "extension",
