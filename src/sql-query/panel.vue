@@ -249,7 +249,7 @@ function onRowClick({ item }) {
 function onActionClick(action, item) {
   if (action.filter) {
     action.filter.forEach(({ variable, value }) => {
-      insights.setVariable(variable, value);
+      insights.setVariable(variable, value.replace(/%(\w+)%/g, (_, key) => item[key]));
     });
   }
   if (action.link) {
