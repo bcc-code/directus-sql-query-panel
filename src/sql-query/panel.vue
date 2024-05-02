@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useApi, useStores } from '@directus/extensions-sdk';
 import debounce from 'lodash.debounce';
 import { computed, nextTick, ref, toRefs, watch } from 'vue';
@@ -7,33 +7,33 @@ import FastTable from './FastTable.vue';
 
 const router = useRouter();
 
-const props = defineProps({
-  id: String,
-  showHeader: {
-    type: Boolean,
-    default: false,
-  },
-  /**
-   * [{
-   *  text: string,
-   *  value: string,
-   *  width: number,
-   *  isNumber: bool,
-   *  sortable: bool,
-   *  searchable: bool,
-   *  summarise: sum | avg | count | count_unique | count_groups
-   * }]
-   */
-  columns: Array,
-  download: {
-    type: Boolean,
-    default: true,
-  },
-  is_static: {
-    type: Boolean,
-    default: false,
-  },
-  actions: Array,
+const props = withDefaults(defineProps<{
+  id: string;
+  showHeader: boolean;
+  columns: Array<{
+    text: string;
+    value: string;
+    width: number;
+    isNumber: boolean;
+    sortable: boolean;
+    searchable: boolean;
+    summarise: 'sum' | 'avg' | 'count' | 'count_unique' | 'count_groups';
+  }>;
+  download: boolean;
+  is_static: boolean;
+  actions: Array<{
+    label: string;
+    icon: string;
+    link: string;
+    show_label: boolean;
+    row: boolean;
+    filter: Array<{
+      variable: string;
+      value: string;
+    }>
+  }>
+}>(), {
+  download: true,
 });
 
 const { id, showHeader, download, is_static } = toRefs(props);
@@ -42,22 +42,26 @@ const loading = ref(false);
 const error = ref('');
 const info = ref('');
 const headers = ref(null);
-const items = ref(null);
+const items = ref<any[] | null>(null);
 
 const api = useApi();
 const { useInsightsStore } = useStores();
-const insights = useInsightsStore();
+const insights = useInsightsStore() as {
+  getVariable: (name: string) => any;
+  setVariable: (name: string, value: any) => void;
+};
 
-const requiredVariables = ref(new Set());
+const requiredVariables = ref(new Set<string>());
 
 const variablesInQuery = computed(() => {
   const variables = {};
-  const missing = [];
+  const missing: string[] = [];
   requiredVariables.value.forEach(v => {
-    if (typeof insights.variables[v] === 'undefined' || insights.variables[v] === null) {
+    const value = insights.getVariable(v);
+    if (typeof value === 'undefined' || value === null) {
       missing.push(v);
     } else {
-      variables[v] = insights.variables[v];
+      variables[v] = value;
     }
   });
 
@@ -99,7 +103,7 @@ const sort = ref({ by: null, desc: false });
 watch(
   sort,
   ({ by, desc }) => {
-    if (by) {
+    if (by && items.value) {
       items.value = items.value.sort((a, b) => {
         if (a[by] < b[by]) return desc ? 1 : -1;
         if (a[by] > b[by]) return desc ? -1 : 1;
@@ -167,6 +171,10 @@ async function fetchData() {
   loading.value = false;
 }
 
+const rowFunction = computed(() => {
+  return props.actions?.find(a => a.row);
+});
+
 function formatTitle(title) {
   return title
     .replace(/_/g, ' ')
@@ -176,6 +184,8 @@ function formatTitle(title) {
 }
 
 function itemsToCsv() {
+  if (!items.value) return;
+
   let str = '';
 
   items.value.forEach(item => {
@@ -203,9 +213,9 @@ function exportCSVFile() {
     const exportedFilename = new Date().toISOString() + '.csv';
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    if (navigator.msSaveBlob) {
+    if ((navigator as any).msSaveBlob) {
       // IE 10+
-      navigator.msSaveBlob(blob, exportedFilename);
+      (navigator as any).msSaveBlob(blob, exportedFilename);
     } else {
       const link = document.createElement('a');
       if (link.download !== undefined) {
@@ -230,9 +240,19 @@ function getLinkForItem(link, item) {
   return linkWithValues;
 }
 
-function onRowClick({ item }) {
-  const action = props.actions?.find(a => a.row);
-  if (action) {
+function onRowClick({ item }) {  
+  if (rowFunction.value) {
+    onActionClick(rowFunction.value, item)
+  }
+}
+
+function onActionClick(action, item) {
+  if (action.filter) {
+    action.filter.forEach(({ variable, value }) => {
+      insights.setVariable(variable, value);
+    });
+  }
+  if (action.link) {
     router.push(getLinkForItem(action.link, item));
   }
 }
@@ -257,13 +277,14 @@ function onRowClick({ item }) {
         @click:row="onRowClick"
         v-model:sort="sort.by"
         v-model:sortDesc="sort.desc"
+        :rowClickable="!!rowFunction"
         fixed-header>
         <template v-if="actions?.find(a => !a.row)" #item-append="{ item }">
           <v-button
             outlined
             v-for="action in actions.filter(a => !a.row)"
             v-tooltip="action.label"
-            :to="getLinkForItem(action.link, item)"
+            @click="onActionClick(action, item)"
             :icon="!action.show_label"
             x-small>
             <v-icon :name="action.icon" />

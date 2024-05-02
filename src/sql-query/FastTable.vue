@@ -5,7 +5,6 @@ import { createSummary } from './useSummary.js';
 
 const { t } = useI18n();
 
-// A vue 3 component with v-model and sort
 const props = defineProps({
   loading: Boolean,
   headers: {
@@ -21,6 +20,7 @@ const props = defineProps({
   sort: String,
   sortDesc: Boolean,
   fixedHeader: Boolean,
+  rowClickable: Boolean,
 });
 
 const search = ref('');
@@ -100,7 +100,7 @@ function sortIt(header) {
       </tbody>
       <tbody v-else>
         <slot :items="fiteredItems">
-          <tr v-for="item in fiteredItems" @click="$emit('click:row', { item, event: $event })">
+          <tr v-for="item in fiteredItems" @click="$emit('click:row', { item, event: $event })" :class="{'clickable': rowClickable}">
             <td v-for="header in headers" :key="header.value" :class="`align-${header.align}`">
               {{ item[header.value] }}
             </td>
@@ -203,6 +203,11 @@ table td {
   padding: 8px;
   align: middle;
   border-bottom: var(--border-width) solid var(--v-input-border-color);
+}
+
+table tr.clickable:hover {
+  background-color: var(--theme--background-subdued);
+  cursor: pointer
 }
 
 table tbody {

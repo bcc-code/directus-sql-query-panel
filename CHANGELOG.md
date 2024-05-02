@@ -1,4 +1,10 @@
-# Version 1.0.7
+# Version 1.0.8
+
+- Added and hover style for on row click
+- Add ability to set variables on clicking actions as an alternative to linking to page
+	- This allows you to set global variables in the dashboard to update other panels
+
+## Version 1.0.7
 
 - Fix issue with cache-control header being set as array instead of string
 

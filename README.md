@@ -57,7 +57,7 @@ emitter.onFilter('sql-query:request', async ({ variables, query }, req) => {
 })
 ```
 
-
 ## Contributing
 
 PRs are welcome!
+
