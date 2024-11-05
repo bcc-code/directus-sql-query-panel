@@ -23,7 +23,7 @@ const registerEndpoint: EndpointConfig = ((router, { database, services, emitter
     };
 
     let { variables, query }: RequestPayload = await emitter.emitFilter(OnFilterEvents.REQUEST, {
-      variables: Object.assign({dashboard: panel.dashboard }, req.query ?? {}),
+      variables: Object.assign({ dashboard: panel.dashboard }, req.query ?? {}),
       query: panel.options.sql,
     }, req);
 
@@ -59,8 +59,6 @@ const registerEndpoint: EndpointConfig = ((router, { database, services, emitter
     const result = await database.raw(sql, vars);
     return parseResults(result);
   }
-
-  
 
   router.get('/query/:panelId', async (req, res) => {
 		try {
