@@ -46,7 +46,7 @@
 	},
 	"devDependencies": {
 		"@directus/extensions": "^0.1.1",
-		"@directus/extensions-sdk": "10.1.14",
+		"@directus/extensions-sdk": "10.3.3",
 		"@directus/types": "^11.0.1",
 		"@types/node": "^20.8.10",
 		"lodash.debounce": "^4.0.8",
