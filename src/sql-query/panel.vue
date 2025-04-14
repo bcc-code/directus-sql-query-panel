@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useApi, useStores } from '@directus/extensions-sdk';
 import debounce from 'lodash.debounce';
-import { computed, nextTick, ref, toRefs, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, toRefs, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import FastTable from './FastTable.vue';
 
@@ -10,6 +10,8 @@ const router = useRouter();
 const props = withDefaults(defineProps<{
   id: string;
   showHeader: boolean;
+  sql: string;
+  cache: number;
   columns: Array<{
     text: string;
     value: string;
@@ -51,12 +53,20 @@ const insights = useInsightsStore() as {
   setVariable: (name: string, value: any) => void;
 };
 
-const requiredVariables = ref(new Set<string>());
+const missingVariables = ref(new Set<string>());
+const watchVariables = computed(() => {
+  const variables = new Set<string>(missingVariables.value);
+  const missingParams = props.sql.match(/{{ \w+ }}/g);
+  if (missingParams) {
+    missingParams.forEach(v => variables.add(v.replace(/{{ | }}/g, '')));
+  }
+  return variables;
+});
 
 const variablesInQuery = computed(() => {
   const variables = {};
   const missing: string[] = [];
-  requiredVariables.value.forEach(v => {
+  watchVariables.value.forEach(v => {
     const value = insights.getVariable(v);
     if (typeof value === 'undefined' || value === null) {
       missing.push(v);
@@ -114,13 +124,34 @@ watch(
   { deep: true }
 );
 
+let cacheExpired = false;
+let lastResponse;
+let fetchedVariables = {};
 let whoIsFetching;
 async function fetchData() {
-  if (Array.isArray(variablesInQuery.value)) return;
-  loading.value = true;
+  loading.value = false;
+  if (Array.isArray(variablesInQuery.value)) {
+    fetchedVariables = {};
+    return;
+  };
+
+  // If the cache anyways expired, we need to refetch
+  if (!cacheExpired) {
+    let different = !watchVariables.value.size;
+    for (const k in variablesInQuery.value) {
+      if (fetchedVariables[k] !== variablesInQuery.value[k]) {
+        different = true;
+      }
+      fetchedVariables[k] = variablesInQuery.value[k];
+    }
+
+    if (!different) return;
+
+    // Only show loading if the something has changed
+    loading.value = true;
+  }
+
   error.value = '';
-  headers.value = null;
-  items.value = null;
 
   try {
 		const me = {};
@@ -130,10 +161,20 @@ async function fetchData() {
       params: variablesInQuery.value,
     });
 		if (whoIsFetching !== me) return;
-
+    
     if (data.error) {
       error.value = data.error;
     }
+
+    resetCache()
+    const asJson = JSON.stringify(data);
+    if (lastResponse === asJson) {
+      loading.value = false;
+      return;
+    };
+    lastResponse = asJson;
+    headers.value = null;
+    items.value = null;
 
     if (data.headers && data.items) {
       const sortable = data.items.length > 2;
@@ -163,12 +204,21 @@ async function fetchData() {
     const err = e.response?.data?.error || e.message;
     if (err.includes('Missing query param')) {
       info.value = err.replace('Missing query param', 'Please specify');
-      err.split(': ')[1].split(', ').forEach(v => requiredVariables.value.add(v));
+      err.split(': ')[1].split(', ').forEach(v => missingVariables.value.add(v));
     } else {
       error.value = err;
     }
   }
   loading.value = false;
+}
+
+function resetCache() {
+  cacheExpired = false;
+  if (props.cache) {
+    setTimeout(() => {      
+      cacheExpired = true;
+    }, props.cache * 1000);
+  }
 }
 
 const rowFunction = computed(() => {

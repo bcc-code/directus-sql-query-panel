@@ -43,6 +43,7 @@ const summary = computed(() => {
 
 // Emit change events
 const $emit = defineEmits(['update:sort', 'update:sortDesc', 'click:row']);
+const lastClicked = ref(null);
 
 function sortIt(header) {
   if (!header.sortable) return;
@@ -100,7 +101,7 @@ function sortIt(header) {
       </tbody>
       <tbody v-else>
         <slot :items="fiteredItems">
-          <tr v-for="item in fiteredItems" @click="$emit('click:row', { item, event: $event })" :class="{'clickable': rowClickable}">
+          <tr v-for="item in fiteredItems" @click="lastClicked = item; $emit('click:row', { item, event: $event })" :class="{'clickable': rowClickable, 'active': lastClicked === item}">
             <td v-for="header in headers" :key="header.value" :class="`align-${header.align}`">
               {{ item[header.value] }}
             </td>
@@ -208,6 +209,10 @@ table td {
 table tr.clickable:hover {
   background-color: var(--theme--background-subdued);
   cursor: pointer
+}
+
+table tr.active {
+  background-color: var(--theme--background-accent);
 }
 
 table tbody {

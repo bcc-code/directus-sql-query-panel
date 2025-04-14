@@ -1,8 +1,8 @@
-import type { EndpointConfig } from '@directus/extensions';
+import { defineEndpoint } from '@directus/extensions-sdk';
 import { parseResults } from './parseQueryResults';
 import { OnFilterEvents, RequestPayload, ResponsePayload } from './types';
 
-const registerEndpoint: EndpointConfig = ((router, { database, services, emitter }) => {
+export default defineEndpoint((router, { database, services, emitter }) => {
   const { PanelsService } = services;
 
   async function getPanelQuery(req: any) {
@@ -77,5 +77,3 @@ const registerEndpoint: EndpointConfig = ((router, { database, services, emitter
 		}
   });
 });
-
-export default registerEndpoint;

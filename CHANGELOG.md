@@ -1,3 +1,8 @@
+# Version 1.1.0
+
+- Add active state on last row clicked
+- Only refetched if variables involved in query were actually changed
+
 # Version 1.0.10
 
 - Fix setting of variable

@@ -7,6 +7,7 @@ export default definePanel({
   icon: "view_list",
   description: "Show result of a stored SQL query as a table",
   component: PanelComponent,
+  skipUndefinedKeys: ['sql'],
   options: [
     {
       field: "sql",
