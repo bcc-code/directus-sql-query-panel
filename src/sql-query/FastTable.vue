@@ -1,4 +1,5 @@
 <script setup>
+import { useVirtualList } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { createSummary } from './useSummary.js';
@@ -26,6 +27,9 @@ const props = defineProps({
 const search = ref('');
 const searchable = computed(() => props.headers.filter(header => header.searchable));
 const fiteredItems = computed(() => {
+  let sort = props.sort;
+  let sortDesc = props.sortDesc;
+  
   const searchValue = search.value ? search.value.toLowerCase().trim() : '';
   return searchValue
     ? props.items.filter(item => {
@@ -34,6 +38,10 @@ const fiteredItems = computed(() => {
         });
       })
     : props.items;
+});
+
+const { list, containerProps, wrapperProps } = useVirtualList(fiteredItems, {
+	itemHeight: 40,
 });
 
 const summary = computed(() => {
@@ -55,7 +63,7 @@ function sortIt(header) {
 
 <template>
   <div class="sql-query-table">
-    <table>
+    <table v-bind="containerProps">
       <thead class="table-header" :class="{ fixed: fixedHeader }">
         <tr class="search" v-if="searchable.length && items.length > 10">
           <th colspan="80%">
@@ -99,9 +107,9 @@ function sortIt(header) {
           </td>
         </tr>
       </tbody>
-      <tbody v-else>
-        <slot :items="fiteredItems">
-          <tr v-for="item in fiteredItems" @click="lastClicked = item; $emit('click:row', { item, event: $event })" :class="{'clickable': rowClickable, 'active': lastClicked === item}">
+      <tbody v-else v-bind="wrapperProps">
+        <slot :items="list">
+          <tr v-for="{ data: item } in list" @click="lastClicked = item; $emit('click:row', { item, event: $event })" :class="{'clickable': rowClickable, 'active': lastClicked === item}">
             <td v-for="header in headers" :key="header.value" :class="`align-${header.align}`">
               {{ item[header.value] }}
             </td>

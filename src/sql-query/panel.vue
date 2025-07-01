@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useApi, useStores } from '@directus/extensions-sdk';
 import debounce from 'lodash.debounce';
-import { computed, nextTick, onMounted, onUnmounted, ref, toRefs, watch } from 'vue';
+import { computed, nextTick, ref, toRefs, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import FastTable from './FastTable.vue';
 
@@ -253,10 +253,13 @@ function itemsToCsv() {
 }
 
 function exportCSVFile() {
-  if (tableHeaders.value && items.value) {
-    let csv = Object.values(tableHeaders.value)
+  // Use all headers from server by default
+  const itemsHeaders = headers.value || tableHeaders.value;
+  if (itemsHeaders && items.value) {
+    let csv = itemsHeaders
       .map(h => h.text)
       .join(',');
+      
     csv += '\r\n';
     csv += itemsToCsv();
 

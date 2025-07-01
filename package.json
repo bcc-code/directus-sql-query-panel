@@ -1,6 +1,6 @@
 {
 	"name": "directus-extension-sql-query-panel",
-	"version": "1.1.1",
+	"version": "1.2.0",
 	"type": "module",
 	"description": "Insights Panel for viewing results for dynamic sql queries",
 	"icon": "extension",
@@ -45,10 +45,13 @@
 		"add": "directus-extension add"
 	},
 	"devDependencies": {
-		"@directus/extensions-sdk": "^13.0.4",
+		"@directus/extensions-sdk": "^14.0.0",
 		"@types/node": "^20.17.30",
 		"lodash.debounce": "^4.0.8",
 		"typescript": "^5.8.3",
 		"vue": "^3.5.13"
+	},
+	"dependencies": {
+		"@vueuse/core": "^13.4.0"
 	}
 }

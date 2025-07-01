@@ -1,9 +1,14 @@
-# Version 1.1.0
+# Version 1.2.0
+
+- Fix export to include correct headers on items
+- Improve table rendering performance by using lazy rendering
+
+## Version 1.1.0
 
 - Add active state on last row clicked
 - Only refetched if variables involved in query were actually changed
 
-# Version 1.0.10
+## Version 1.0.10
 
 - Fix setting of variable
 
