@@ -27,8 +27,7 @@ const props = defineProps({
 const search = ref('');
 const searchable = computed(() => props.headers.filter(header => header.searchable));
 const fiteredItems = computed(() => {
-  let sort = props.sort;
-  let sortDesc = props.sortDesc;
+  console.debug(props.sort, props.sortDesc);
   
   const searchValue = search.value ? search.value.toLowerCase().trim() : '';
   return searchValue
@@ -37,7 +36,7 @@ const fiteredItems = computed(() => {
           return item[header.value] && item[header.value].toLowerCase().includes(searchValue);
         });
       })
-    : props.items;
+    : [...props.items];
 });
 
 const { list, containerProps, wrapperProps } = useVirtualList(fiteredItems, {

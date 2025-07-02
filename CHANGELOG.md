@@ -1,4 +1,8 @@
-# Version 1.2.0
+# Version 1.2.1
+
+- Fix sorting not working after performance update
+
+## Version 1.2.0
 
 - Fix export to include correct headers on items
 - Improve table rendering performance by using lazy rendering
