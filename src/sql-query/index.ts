@@ -83,7 +83,7 @@ export default definePanel({
             },
             {
               field: "isNumber",
-              name: "Is Numberic",
+              name: "Is Numeric",
               type: "boolean",
               meta: {
                 width: "half",
