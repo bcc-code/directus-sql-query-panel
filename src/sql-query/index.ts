@@ -26,7 +26,6 @@ export default definePanel({
       field: "columns",
       name: "Columns",
       type: "json",
-      special: "cast-json",
       meta: {
         width: "full",
         interface: "list",
@@ -134,7 +133,6 @@ export default definePanel({
       field: "actions",
       name: "Actions",
       type: "json",
-      special: "cast-json",
       meta: {
         width: "full",
         interface: "list",
@@ -290,6 +288,19 @@ export default definePanel({
       },
       schema: {
         default_value: 300,
+      },
+    },
+    {
+      field: "allow_refresh",
+      name: "Allow refresh",
+      type: "boolean",
+      meta: {
+        width: "half",
+        interface: "boolean",
+        note: "Allow the user to bypass the cache and fetch a fresh result"
+      },
+      schema: {
+        default_value: false,
       },
     },
   ],

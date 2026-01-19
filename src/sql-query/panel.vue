@@ -23,6 +23,7 @@ const props = withDefaults(defineProps<{
   }>;
   download: boolean;
   is_static: boolean;
+  allow_refresh: boolean;
   actions: Array<{
     label: string;
     icon: string;
@@ -43,7 +44,7 @@ const { id, showHeader, download, is_static } = toRefs(props);
 const loading = ref(false);
 const error = ref('');
 const info = ref('');
-const headers = ref(null);
+const headers = ref<{ text: string; value: string; width: number; sortable: boolean }[] | null>(null);
 const items = ref<any[] | null>(null);
 
 const api = useApi();
@@ -64,7 +65,7 @@ const watchVariables = computed(() => {
 });
 
 const variablesInQuery = computed(() => {
-  const variables = {};
+  const variables: Record<string, any> = {};
   const missing: string[] = [];
   watchVariables.value.forEach(v => {
     const value = insights.getVariable(v);
@@ -125,10 +126,10 @@ watch(
 );
 
 let cacheExpired = false;
-let lastResponse;
-let fetchedVariables = {};
+let lastResponse: string | null = null;
+let fetchedVariables: Record<string, any> = {};
 let whoIsFetching;
-async function fetchData() {
+async function fetchData(noCache = false) {
   loading.value = false;
   if (Array.isArray(variablesInQuery.value)) {
     fetchedVariables = {};
@@ -136,7 +137,7 @@ async function fetchData() {
   };
 
   // If the cache anyways expired, we need to refetch
-  if (!cacheExpired) {
+  if (!cacheExpired && !noCache) {
     let different = !watchVariables.value.size;
     for (const k in variablesInQuery.value) {
       if (fetchedVariables[k] !== variablesInQuery.value[k]) {
@@ -149,6 +150,8 @@ async function fetchData() {
 
     // Only show loading if the something has changed
     loading.value = true;
+  } else if (noCache) {
+    loading.value = true;
   }
 
   error.value = '';
@@ -157,9 +160,15 @@ async function fetchData() {
 		const me = {};
 		whoIsFetching = me
 
+    const params: Record<string, any> = { ...variablesInQuery.value };
+
     const { data } = await api.get(`insights/query/${id.value}`, {
-      params: variablesInQuery.value,
-    });
+      params,
+      headers: {
+        // Prevent browser disk cache by using headers
+        'Cache-Control': noCache ? 'no-cache' : undefined,
+      }
+    }) as { data: { error: string; headers: string[]; items: Record<string, any>[] } };
 		if (whoIsFetching !== me) return;
     
     if (data.error) {
@@ -225,7 +234,7 @@ const rowFunction = computed(() => {
   return props.actions?.find(a => a.row);
 });
 
-function formatTitle(title) {
+function formatTitle(title: string) {
   return title
     .replace(/_/g, ' ')
     .replace(/(?:^|\s)\S/g, function (a) {
@@ -285,7 +294,7 @@ function exportCSVFile() {
 }
 
 // Replace {{variable}} placeholders in link with values from item
-function getLinkForItem(link, item) {
+function getLinkForItem(link: string, item: Record<string, any>) {
   let linkWithValues = link;
   for (let key in item) {
     linkWithValues = linkWithValues.replace(new RegExp(`%${key}%`, 'g'), item[key]);
@@ -293,13 +302,13 @@ function getLinkForItem(link, item) {
   return linkWithValues;
 }
 
-function onRowClick({ item }) {  
+function onRowClick({ item }: { item: Record<string, any> }) {  
   if (rowFunction.value) {
     onActionClick(rowFunction.value, item)
   }
 }
 
-function onActionClick(action, item) {
+function onActionClick(action: { label: string; icon: string; link: string; show_label: boolean; row: boolean; filter: Array<{ variable: string; value: string }> }, item: Record<string, any>) {
   if (action.filter) {
     action.filter.forEach(({ variable, value }) => {
       insights.setVariable(variable, value.replace(/%(\w+)%/g, (_, key) => item[key]));
@@ -308,6 +317,11 @@ function onActionClick(action, item) {
   if (action.link) {
     router.push(getLinkForItem(action.link, item));
   }
+}
+
+async function onRefresh() {
+  loading.value = true;
+  await fetchData(true);
 }
 </script>
 
@@ -328,9 +342,11 @@ function onActionClick(action, item) {
         :headers="tableHeaders"
         :items="items"
         @click:row="onRowClick"
+        @refresh="onRefresh"
         v-model:sort="sort.by"
         v-model:sortDesc="sort.desc"
         :rowClickable="!!rowFunction"
+        :showRefresh="allow_refresh"
         fixed-header>
         <template v-if="actions?.find(a => !a.row)" #item-append="{ item }">
           <v-button

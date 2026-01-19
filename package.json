@@ -45,7 +45,8 @@
 		"add": "directus-extension add"
 	},
 	"devDependencies": {
-		"@directus/extensions-sdk": "^14.0.0",
+		"@directus/extensions-sdk": "^15.0.0",
+		"@types/keyv": "^3.1.4",
 		"@types/node": "^20.19.17",
 		"@vueuse/core": "^13.9.0",
 		"lodash.debounce": "^4.0.8",

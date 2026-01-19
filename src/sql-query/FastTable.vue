@@ -22,6 +22,7 @@ const props = defineProps({
   sortDesc: Boolean,
   fixedHeader: Boolean,
   rowClickable: Boolean,
+  showRefresh: Boolean,
 });
 
 const search = ref('');
@@ -49,7 +50,7 @@ const summary = computed(() => {
 });
 
 // Emit change events
-const $emit = defineEmits(['update:sort', 'update:sortDesc', 'click:row']);
+const $emit = defineEmits(['update:sort', 'update:sortDesc', 'click:row', 'refresh']);
 const lastClicked = ref(null);
 
 function sortIt(header) {
@@ -74,7 +75,17 @@ function sortIt(header) {
           </th>
         </tr>
         <tr class="headers">
-          <th v-for="header in headers" :style="{minWidth: `${header.width || auto}ch`}" :key="header.value" @click="sortIt(header)" :align="header.align || 'left'">
+          <th v-for="(header, index) in headers" :style="{minWidth: `${header.width || auto}ch`}" :key="header.value" @click="sortIt(header)" :align="header.align || 'left'">
+            <v-icon
+              v-if="index === 0 && showRefresh"
+              icon
+              small
+              secondary
+              right
+              @click.stop="$emit('refresh')"
+              v-tooltip="'Refresh'"
+              name="refresh" clickable />
+            
             {{ header.text }}
             <v-icon
               v-if="header.sortable"

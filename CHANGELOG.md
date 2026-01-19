@@ -1,4 +1,9 @@
-# Version 1.2.1
+# Version 1.3.0
+
+- Added backend caching of query results. 
+- Added option to allow end user to bypass cache and fetch new results.
+
+## Version 1.2.1
 
 - Fix sorting not working after performance update
 
