@@ -1,5 +1,5 @@
 import { defineEndpoint } from '@directus/extensions-sdk';
-import Keyv from 'keyv';
+import type Keyv from 'keyv';
 import { parseResults } from './parseQueryResults';
 import { OnFilterEvents, RequestPayload, ResponsePayload } from './types';
 

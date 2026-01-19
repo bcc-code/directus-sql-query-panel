@@ -1,7 +1,8 @@
-# Version 1.3.0
+# Version 1.3.1
 
 - Added backend caching of query results. 
 - Added option to allow end user to bypass cache and fetch new results.
+- Update directus extension sdk
 
 ## Version 1.2.1
 
