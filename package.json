@@ -42,7 +42,8 @@
 		"build": "directus-extension build",
 		"dev": "directus-extension build -w --no-minify",
 		"link": "directus-extension link",
-		"add": "directus-extension add"
+		"add": "directus-extension add",
+		"release-channel": "node ./scripts/release-channel.js"
 	},
 	"devDependencies": {
 		"@directus/extensions-sdk": "^16.0.2",
