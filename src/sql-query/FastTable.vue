@@ -34,7 +34,7 @@ const fiteredItems = computed(() => {
   return searchValue
     ? props.items.filter(item => {
         return searchable.value.some(header => {
-          return item[header.value] && item[header.value].toLowerCase().includes(searchValue);
+          return item[header.value] && String(item[header.value]).toLowerCase().includes(searchValue);
         });
       })
     : [...props.items];
