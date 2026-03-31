@@ -4,6 +4,10 @@
 	"type": "module",
 	"description": "Insights Panel for viewing results for dynamic sql queries",
 	"icon": "extension",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/bcc-code/directus-sql-query-panel"
+	},
 	"author": {
 		"name": "Gerard Lamusse"
 	},
