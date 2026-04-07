@@ -1,7 +1,7 @@
-import { definePanel } from '@directus/extensions-sdk';
+import { type PanelConfig } from '@directus/extensions';
 import PanelComponent from './panel.vue';
 
-export default definePanel({
+const panel: PanelConfig = {
   id: "sql-query",
   name: "SQL Query panel",
   icon: "view_list",
@@ -306,4 +306,6 @@ export default definePanel({
   ],
   minWidth: 10,
   minHeight: 10,
-});
+};
+
+export default panel;

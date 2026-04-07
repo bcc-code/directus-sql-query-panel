@@ -50,15 +50,15 @@
 		"release-channel": "node ./scripts/release-channel.js"
 	},
 	"devDependencies": {
-		"@directus/extensions-sdk": "^16.0.2",
-		"@types/keyv": "^3.1.4",
-		"@types/node": "^20.19.17",
-		"@vueuse/core": "^13.9.0",
+		"@directus/extensions": "3.0.23",
+		"@directus/extensions-sdk": "^17.1.2",
+		"@types/keyv": "^4.2.0",
+		"@types/node": "^25.5.2",
 		"lodash.debounce": "^4.0.8",
-		"typescript": "^5.9.2",
-		"vue": "^3.5.13"
+		"typescript": "^6.0.2",
+		"vue": "^3.5.24"
 	},
 	"dependencies": {
-		"@vueuse/core": "^13.4.0"
+		"@vueuse/core": "^14.2.1"
 	}
 }

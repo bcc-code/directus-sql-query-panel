@@ -1,9 +1,9 @@
-import { defineEndpoint } from '@directus/extensions-sdk';
+import { EndpointConfig } from '@directus/extensions';
 import type Keyv from 'keyv';
 import { parseResults } from './parseQueryResults';
 import { OnFilterEvents, RequestPayload, ResponsePayload } from './types';
 
-export default defineEndpoint((router, { database, services, emitter }) => {
+const endpoint: EndpointConfig = (router, { database, services, emitter }) => {
   const { PanelsService } = services;
 
   async function getPanelQuery(req: any) {
@@ -106,4 +106,6 @@ export default defineEndpoint((router, { database, services, emitter }) => {
       return res.status(400).json({ error: (err as Error).message })
 		}
   });
-});
+};
+
+export default endpoint;
