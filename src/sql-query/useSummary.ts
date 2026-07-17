@@ -25,11 +25,23 @@ const symbols: Symbols = {
 
 const summarisers: Summarisers = {
   sum(items: any[], column: string): number {
-    return items.reduce((sum, item) => sum + Number.parseInt(item[column]), 0);
+    return items.reduce((sum, item) => {
+      const n = Number(item[column] ?? NaN);
+      return Number.isFinite(n) ? sum + n : sum;
+    }, 0);
   },
 
   avg(items: any[], column: string): number {
-    return Math.round(summarisers.sum(items, column) / items.length);
+    let total = 0;
+    let count = 0;
+    for (const item of items) {
+      const n = Number(item[column] ?? NaN);
+      if (Number.isFinite(n)) {
+        total += n;
+        count++;
+      }
+    }
+    return count ? Math.round(total / count) : 0;
   },
 
   count(items: any[]): number {
