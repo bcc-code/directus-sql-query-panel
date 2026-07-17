@@ -50,6 +50,25 @@ const columnFields = [
     },
   },
   {
+    field: "alignment",
+    name: "Alignment",
+    type: "string",
+    meta: {
+      width: "half",
+      interface: "select-dropdown",
+      options: {
+        choices: [
+          { text: "Left", value: "left" },
+          { text: "Center", value: "center" },
+          { text: "Right", value: "right" },
+        ],
+      },
+    },
+    schema: {
+      default_value: "left",
+    },
+  },
+  {
     field: "isNumber",
     name: "Is Numeric",
     type: "boolean",

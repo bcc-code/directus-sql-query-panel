@@ -75,7 +75,7 @@ function sortIt(header) {
           </th>
         </tr>
         <tr class="headers">
-          <th v-for="(header, index) in headers" :style="{minWidth: `${header.width || auto}ch`}" :key="header.value" @click="sortIt(header)" :align="header.align || 'left'">
+          <th v-for="(header, index) in headers" :style="{minWidth: `${header.width || auto}ch`}" :key="header.value" @click="sortIt(header)" :class="`align-${header.alignment || 'left'}`">
             <v-icon
               v-if="index === 0 && showRefresh"
               icon
@@ -120,7 +120,7 @@ function sortIt(header) {
       <tbody v-else v-bind="wrapperProps">
         <slot :items="list">
           <tr v-for="{ data: item } in list" @click="lastClicked = item; $emit('click:row', { item, event: $event })" :class="{'clickable': rowClickable, 'active': lastClicked === item}">
-            <td v-for="header in headers" :key="header.value" :class="`align-${header.align}`">
+            <td v-for="header in headers" :key="header.value" :class="`align-${header.alignment || 'left'}`">
               {{ item[header.value] }}
             </td>
             <td v-if="$slots['item-append']" @click.stop>
@@ -133,7 +133,7 @@ function sortIt(header) {
       </tbody>
       <tfoot v-if="summary">
         <tr>
-          <td v-for="col in headers" :key="col.value" v-tooltip="col.summarise">
+          <td v-for="col in headers" :key="col.value" :class="`align-${col.alignment || 'left'}`" v-tooltip="col.summarise">
             <code class="v-text-overflow" v-if="summary[col.value]">
               {{ summary[col.value] }}
             </code>
@@ -216,6 +216,21 @@ table th .sort-icon.show {
 
 table th.select {
   width: 2rem;
+}
+
+table th.align-left,
+table td.align-left {
+  text-align: left;
+}
+
+table th.align-center,
+table td.align-center {
+  text-align: center;
+}
+
+table th.align-right,
+table td.align-right {
+  text-align: right;
 }
 
 table td {

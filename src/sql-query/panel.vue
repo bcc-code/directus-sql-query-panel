@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<{
     text: string;
     value: string;
     width: number;
+    alignment?: 'left' | 'center' | 'right';
     isNumber: boolean;
     sortable: boolean;
     searchable: boolean;
@@ -126,6 +127,7 @@ const tableHeaders = computed(() => {
     return props.columns.map(col => ({
       ...col,
       text: col.text || col.value,
+      alignment: col.alignment || 'left',
     }));
   }
 
@@ -216,6 +218,7 @@ async function fetchData(noCache = false) {
           value: v,
           width: text.length + 1,
           sortable: sortable,
+          alignment: 'left' as const,
         };
       });
 
