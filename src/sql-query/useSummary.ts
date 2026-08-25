@@ -25,10 +25,10 @@ const symbols: Symbols = {
 
 const summarisers: Summarisers = {
   sum(items: any[], column: string): number {
-    return items.reduce((sum, item) => {
+    return Math.round(items.reduce((sum, item) => {
       const n = Number(item[column] ?? NaN);
       return Number.isFinite(n) ? sum + n : sum;
-    }, 0);
+    }, 0));
   },
 
   avg(items: any[], column: string): number {

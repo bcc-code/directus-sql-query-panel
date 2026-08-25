@@ -1,4 +1,8 @@
-# Version 1.5.0
+# Version 1.5.1
+
+- On columns that are selected to sum, it will now round the result to avoid displaying results such as 100.3333333
+
+## Version 1.5.0
 
 - Add display modes for query results: table (default), single value, and pie chart
 - Single value mode supports text and numeric values, with single or multiple row layouts (label | value)
