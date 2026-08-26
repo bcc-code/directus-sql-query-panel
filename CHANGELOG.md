@@ -1,4 +1,4 @@
-# Version 1.5.1
+# Version 1.5.3
 
 - On columns that are selected to sum, it will now round the result to avoid displaying results such as 100.3333333
 
